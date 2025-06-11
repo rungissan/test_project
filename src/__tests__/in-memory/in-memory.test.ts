@@ -38,7 +38,7 @@ describe('InMemoryStorage', () => {
       expect(storage.size()).toBe(10000);
 
       expect(() => storage.add({ id: 'overflow', tags: ['overflow'] })).toThrow(
-        'Storage limit of 10,000 records exceeded'
+        'Storage limit of 10000 records exceeded'
       );
     });
   });

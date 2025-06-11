@@ -33,10 +33,10 @@
     "vitest": "^3.2.3"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
+    "*.{ts,js}": [
       "eslint --fix",
       "prettier --write",
-      "vitest run --changed"
+      "vitest run"
     ]
   }
 }
