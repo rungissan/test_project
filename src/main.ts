@@ -5,4 +5,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <h1>Vite + TypeScript</h1>
     <p>Your project is ready to go!</p>
   </div>
-`
+`;

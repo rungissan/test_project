@@ -23,6 +23,7 @@
     "eslint-plugin-prettier": "^5.4.1",
     "globals": "^16.2.0",
     "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
     "lint-staged": "^16.1.0",
     "prettier": "^3.5.3",
     "typescript": "^5.0.2",
@@ -31,10 +32,10 @@
     "vitest": "^3.2.3"
   },
   "lint-staged": {
-   "**/*.{ts,tsx}": [
-     "eslint --fix",
-     "prettier --write",
-     "vitest run --changed"
-   ]
- }
+    "**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "vitest run --changed"
+    ]
+  }
 }

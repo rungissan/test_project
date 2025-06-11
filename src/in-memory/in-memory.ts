@@ -45,7 +45,7 @@ export class InMemoryStorage {
 
       // Check by tags - if specified, the record must contain all specified tags
       if (tags && tags.length > 0) {
-        const hasAllTags = tags.every(tag => record.tags.includes(tag));
+        const hasAllTags = tags.every((tag) => record.tags.includes(tag));
         if (!hasAllTags) {
           continue;
         }
@@ -80,4 +80,3 @@ export class InMemoryStorage {
     return this.recordKeys.size;
   }
 }
-
