@@ -35,10 +35,12 @@
     "vitest": "^3.2.3"
   },
   "lint-staged": {
-    "*.{ts,js}": [
-      "eslint --fix",
-      "prettier --write",
-      "vitest run"
-    ]
-  }
+     "**/*.{ts,js}": [
+       "eslint --fix",
+       "prettier --write"
+     ],
+     "**/*.{test,spec}.{ts,js}": [
+       "npx vitest run"
+     ]
+ }
 }

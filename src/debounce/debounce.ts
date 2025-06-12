@@ -8,15 +8,12 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
   let maxTimeoutId: ReturnType<typeof setTimeout> | null = null;
   let lastArgs: Parameters<F> | null = null;
   let lastThis: ThisParameterType<F> | null = null;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let lastInvokeTime = 0;
   let forceLeading = false;
 
   const { wait, leading = false, trailing = true, maxWait } = opts;
 
   const invoke = () => {
     const result = fn.apply(lastThis, lastArgs!) as ReturnType<F>;
-    lastInvokeTime = Date.now();
     lastArgs = null;
     lastThis = null;
     return result;
@@ -26,15 +23,15 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     if (timeoutId !== null) clearTimeout(timeoutId);
     if (maxTimeoutId === null && maxWait !== undefined) {
       maxTimeoutId = setTimeout(() => {
-        flush();
+        debounced.flush();
       }, maxWait);
     }
 
     timeoutId = setTimeout(() => {
       if (trailing && lastArgs) {
-        flush();
+        debounced.flush();
       } else {
-        cancel();
+        debounced.cancel();
       }
     }, wait);
   };
@@ -43,7 +40,6 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     const isLeadingCall = (leading && !timeoutId) || forceLeading;
 
     lastArgs = args;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     lastThis = this;
 
     if (isLeadingCall) {
@@ -54,7 +50,7 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     startTimers();
   };
 
-  const flush = (): ReturnType<F> | undefined => {
+  debounced.flush = (): ReturnType<F> | undefined => {
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
@@ -70,7 +66,7 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     return undefined;
   };
 
-  const cancel = (): void => {
+  debounced.cancel = (): void => {
     if (timeoutId) clearTimeout(timeoutId);
     if (maxTimeoutId) clearTimeout(maxTimeoutId);
     timeoutId = null;
@@ -79,14 +75,9 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     lastThis = null;
   };
 
-  const forceNext = (): void => {
-    lastInvokeTime = 0;
+  debounced.forceNext = (): void => {
     forceLeading = true;
   };
-
-  (debounced as Debounced<F>).flush = flush;
-  (debounced as Debounced<F>).cancel = cancel;
-  (debounced as Debounced<F>).forceNext = forceNext;
 
   return debounced as Debounced<F>;
 }

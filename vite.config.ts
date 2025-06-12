@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { configDefaults } from 'vitest/config';
 
 export default defineConfig({
   server: {
@@ -12,9 +11,7 @@ export default defineConfig({
     sourcemap: true,
   },
   test: {
-    globals: true,
-    environment: 'jsdom',
-    exclude: [...configDefaults.exclude, 'e2e/*'],
+    include: ['src/__tests__/**/*.{ts,js}'],
   },
   plugins: [tsconfigPaths()],
 });

@@ -18,6 +18,13 @@ export default defineConfig([
     },
     rules: {
       'prettier/prettier': 'error',
+      '@typescript-eslint/no-this-alias': [
+        'error',
+        {
+          allowDestructuring: true,
+          allowedNames: ['lastThis'],
+        },
+      ],
     },
   },
 ]);
