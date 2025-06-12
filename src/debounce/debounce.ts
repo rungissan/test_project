@@ -5,64 +5,88 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
   opts: DebounceOptions
 ): Debounced<F> {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  let lastCallTime = 0;
+  let maxTimeoutId: ReturnType<typeof setTimeout> | null = null;
   let lastArgs: Parameters<F> | null = null;
   let lastThis: ThisParameterType<F> | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let lastInvokeTime = 0;
+  let forceLeading = false;
 
-  const wait = opts.wait;
+  const { wait, leading = false, trailing = true, maxWait } = opts;
 
-  const debounced = function (
-    this: ThisParameterType<F>,
-    ...args: Parameters<F>
-  ): ReturnType<F> | void {
-    const now = Date.now();
+  const invoke = () => {
+    const result = fn.apply(lastThis, lastArgs!) as ReturnType<F>;
+    lastInvokeTime = Date.now();
+    lastArgs = null;
+    lastThis = null;
+    return result;
+  };
+
+  const startTimers = () => {
+    if (timeoutId !== null) clearTimeout(timeoutId);
+    if (maxTimeoutId === null && maxWait !== undefined) {
+      maxTimeoutId = setTimeout(() => {
+        flush();
+      }, maxWait);
+    }
+
+    timeoutId = setTimeout(() => {
+      if (trailing && lastArgs) {
+        flush();
+      } else {
+        cancel();
+      }
+    }, wait);
+  };
+
+  const debounced = function (this: ThisParameterType<F>, ...args: Parameters<F>): void {
+    const isLeadingCall = (leading && !timeoutId) || forceLeading;
 
     lastArgs = args;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     lastThis = this;
 
-    const shouldCallNow = now >= lastCallTime + wait;
-
-    if (shouldCallNow) {
-      lastCallTime = now;
-      return fn.apply(this, args) as ReturnType<F>;
+    if (isLeadingCall) {
+      forceLeading = false;
+      invoke();
     }
 
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      if (lastArgs && lastThis) {
-        lastCallTime = Date.now();
-        fn.apply(lastThis, lastArgs);
-        lastArgs = null;
-        lastThis = null;
-      }
-    }, wait);
+    startTimers();
   };
 
-  debounced.cancel = (): void => {
+  const flush = (): ReturnType<F> | undefined => {
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
     }
-    lastArgs = null;
-    lastThis = null;
-  };
+    if (maxTimeoutId) {
+      clearTimeout(maxTimeoutId);
+      maxTimeoutId = null;
+    }
 
-  debounced.flush = function (): ReturnType<F> | undefined {
-    if (timeoutId && lastArgs && lastThis) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-      const result = fn.apply(lastThis, lastArgs) as ReturnType<F>;
-      lastArgs = null;
-      lastThis = null;
-      return result;
+    if (lastArgs) {
+      return invoke();
     }
     return undefined;
   };
 
-  debounced.forceNext = (): void => {
-    lastCallTime = 0;
+  const cancel = (): void => {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (maxTimeoutId) clearTimeout(maxTimeoutId);
+    timeoutId = null;
+    maxTimeoutId = null;
+    lastArgs = null;
+    lastThis = null;
   };
+
+  const forceNext = (): void => {
+    lastInvokeTime = 0;
+    forceLeading = true;
+  };
+
+  (debounced as Debounced<F>).flush = flush;
+  (debounced as Debounced<F>).cancel = cancel;
+  (debounced as Debounced<F>).forceNext = forceNext;
 
   return debounced as Debounced<F>;
 }
