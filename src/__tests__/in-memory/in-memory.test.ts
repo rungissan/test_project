@@ -75,7 +75,7 @@ describe('InMemoryStorage', () => {
     test('should find records by single tag', () => {
       const results = storage.query({ tags: ['javascript'] });
       expect(results).toHaveLength(2);
-      expect(results.map((r) => r.id).sort()).toEqual(['1', '3']);
+      expect(results.map((r) => r.id).sort((a, b) => a.localeCompare(b))).toEqual(['1', '3']);
     });
 
     test('should find records by multiple tags (all must be present)', () => {
