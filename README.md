@@ -10,3 +10,13 @@ Tests with [Vitest](https://vitest.dev/).
 git clone https://github.com/rungissan/test_project.git
 cd test_project
 npm install
+
+## 🚀 Installation
+[development]
+npm run dev
+
+[playground] localhost:3000
+
+## test 25 testcases in 2 files
+
+npm run test
