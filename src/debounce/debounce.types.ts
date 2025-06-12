@@ -5,9 +5,13 @@ export interface DebounceOptions {
   maxWait?: number;
 }
 
-export interface Debounced<F extends (...args: unknown[]) => unknown> {
-  (...args: Parameters<F>): ReturnType<F> | void;
+export type Debounced<
+  F extends (...args: A) => R,
+  A extends unknown[] = Parameters<F>,
+  R = ReturnType<F>,
+> = {
+  (...args: A): R;
   cancel(): void;
   flush(): ReturnType<F> | undefined;
-  forceNext(): void;
-}
+  forceNext: () => void;
+};

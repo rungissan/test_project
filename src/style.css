@@ -29,6 +29,9 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg, #242424);
+  color: var(--text-color, rgba(255, 255, 255, 0.87));
+  font-family: inherit;
 }
 
 #app {
@@ -36,19 +39,81 @@ body {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  width: 600px;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+section {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input, button, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  box-sizing: border-box;
+  font-size: 1em;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: #eee;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+button {
+  width: auto;
+  margin-top: 10px;
+  cursor: pointer;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #535bf2;
+}
+
+#results, #debounce-log {
+  margin-top: 10px;
+  white-space: pre-wrap;
+  background: #1e1e1e;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --text-color: #213547;
+    --bg: #ffffff;
   }
   a:hover {
     color: #747bff;
+  }
+  input, button, textarea {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    color: #222;
+  }
+  #results, #debounce-log {
+    background: #f0f0f0;
+    color: #222;
   }
 }

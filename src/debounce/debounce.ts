@@ -1,19 +1,20 @@
 import { Debounced, DebounceOptions } from './debounce.types';
 
-export function debounce<F extends (...args: unknown[]) => unknown>(
-  fn: F,
-  opts: DebounceOptions
-): Debounced<F> {
+export function debounce<
+  F extends (...args: A) => R,
+  A extends unknown[] = Parameters<F>,
+  R = ReturnType<F>,
+>(fn: F, opts: DebounceOptions): Debounced<F, A, R> {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let maxTimeoutId: ReturnType<typeof setTimeout> | null = null;
-  let lastArgs: Parameters<F> | null = null;
-  let lastThis: ThisParameterType<F> | null = null;
+  let lastArgs: A | null = null;
+  let lastThis: unknown = null;
   let forceLeading = false;
 
   const { wait, leading = false, trailing = true, maxWait } = opts;
 
   const invoke = () => {
-    const result = fn.apply(lastThis, lastArgs!) as ReturnType<F>;
+    const result = fn.apply(lastThis, lastArgs!) as R;
     lastArgs = null;
     lastThis = null;
     return result;
@@ -36,7 +37,7 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     }, wait);
   };
 
-  const debounced = function (this: ThisParameterType<F>, ...args: Parameters<F>): void {
+  const debounced = function (this: unknown, ...args: A): R | undefined {
     const isLeadingCall = (leading && !timeoutId) || forceLeading;
 
     lastArgs = args;
@@ -48,9 +49,10 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     }
 
     startTimers();
+    return undefined as R;
   };
 
-  debounced.flush = (): ReturnType<F> | undefined => {
+  debounced.flush = (): R | undefined => {
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
@@ -79,5 +81,5 @@ export function debounce<F extends (...args: unknown[]) => unknown>(
     forceLeading = true;
   };
 
-  return debounced as Debounced<F>;
+  return debounced as Debounced<F, A, R>;
 }
